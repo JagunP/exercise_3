@@ -13,74 +13,8 @@
 
   <h1>Precius' Web Journal</h1>
 
-  <?php
-  // Connect to the database
-  $db = new PDO('sqlite:db/weblog.sqlite3');
-
-  // Query the database for posts and comments
-  $stmt = $db->prepare('SELECT posts.*, comments.id AS comment_id, comments.author AS comment_author, comments.body AS comment_body
-                        FROM posts
-                        LEFT JOIN comments ON posts.id = comments.post_id
-                        ORDER BY posts.id DESC, comments.id ASC');
-  $stmt->execute();
-  $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-  // Initialize variables to keep track of the current post and comments
-  $current_post_id = null;
-  $current_title = null;
-  $current_body = null;
-  $current_comments = array();
-
-  // Loop through the results and display each post and its comments
-  foreach ($results as $result) {
-      // Check if this is a new post
-      if ($result['id'] !== $current_post_id) {
-          // Display the current post and its comments
-          if ($current_post_id !== null) {
-              echo '<h2><a href="#post-' . $current_post_id . '">' . htmlspecialchars($current_title) . '</a></h2>';
-              echo '<p>' . nl2br(htmlspecialchars($current_body)) . '</p>';
-              echo '<ul>';
-              foreach ($current_comments as $comment) {
-                  echo '<li><p><strong>' . htmlspecialchars($comment['comment_author']) . ':</strong> ' . htmlspecialchars($comment['comment_body']) . '</p></li>';
-              }
-              echo '</ul>';
-          }
-
-          // Initialize the current post and comments
-          $current_post_id = $result['id'];
-          $current_title = $result['title'];
-          $current_body = $result['body'];
-          $current_comments = array();
-      }
-
-      // Add the comment to the current comments array
-      if ($result['comment_id'] !== null) {
-          $current_comments[] = array(
-              'comment_id' => $result['comment_id'],
-              'comment_author' => $result['comment_author'],
-              'comment_body' => $result['comment_body'],
-          );
-      }
-  }
-
-  // Display the last post and its comments
-  if ($current_post_id !== null) {
-    // Display the current post and its comments
-    echo '<h2><a href="#post-' . $current_post_id . '">' . htmlspecialchars($current_title) . '</a></h2>';
-    echo '<p>' . nl2br(htmlspecialchars($current_body)) . '</p>';
-    echo '<ul>';
-    foreach ($current_comments as $comment) {
-        echo '<li><p><strong>' . htmlspecialchars($comment['author']) . ':</strong> ' . htmlspecialchars($comment['comment_body']) . '</p></li>';
-    }
-    echo '</ul>';
-  }
-
-  // Close the database connection
-  $db = null;
-  ?>
-
-  <!-- <div id="posts" style="visibility: hidden;">
-    <post style="visibility: hidden;" class="post" id="3">
+  <div id="posts">
+    <post class="post" id="3">
       <h2 class=post-title id="a_post_title">
         A Post Title
         <a href="#a_post_title">
@@ -132,7 +66,7 @@ towards the ocean with me.
       </div>
     </post>
 
-    <post id="2" style="visibility: hidden;">
+    <post id="2">
       <h2 class=post-title id="this_is_just_to_say">
         This Is Just To Say
         <a href="#this_is_just_to_say">
@@ -165,7 +99,7 @@ and so cold
       </div>
     </post>
 
-    <post id="1" style="visibility: hidden;">
+    <post id="1">
       <h2 class=post-title id="sonnet_2">
         Sonnet 2
         <a href="#sonnet_2">
@@ -198,7 +132,7 @@ Proving his beauty by succession thine.
       </div>
     </post>
 
-    <post id="0" style="visibility: hidden;">
+    <post id="0">
       <h2 class=post-title id="first_post">
         First Post
         <a href="#first_post">
@@ -218,5 +152,5 @@ Hello World!
       </div>
     </post>
 
-  </div> end of posts block
-</body> -->
+  </div> <!-- end of posts block -->
+</body>
